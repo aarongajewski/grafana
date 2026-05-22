@@ -34,7 +34,55 @@ Start the log message with a capital letter, for example, `logger.Info("Hello wo
 
 To be consistent with Go identifiers, prefer using camelCase style when naming log keys; for example, `remoteAddr`.
 
-Use the key `Error` when logging Go errors; for example, `logger.Error("Something failed", "error", fmt.Errorf("BOOM"))`.
+Use the key `error` when logging Go errors; for example, `logger.Error("Something failed", "error", fmt.Errorf("BOOM"))`.
+
+### Structured logging contract
+
+Production logs must use a **static message identifier** plus **structured key-value pairs** for dynamic data. This keeps logs queryable in Loki and other backends.
+
+**Do:**
+
+```go
+logger.Info("Uploaded snapshot file", "fileName", fileName, "durationMs", elapsed)
+logger.Debug("Build snapshot step completed", "step", "generateKeys", "durationMs", elapsed)
+logger.Error("Could not set environment variable", "variable", envVar, "error", err)
+```
+
+**Do not** embed dynamic values in the message with `fmt.Sprintf`, string concatenation, or `fmt.Sprint`:
+
+```go
+// Bad: dynamic values are not queryable as structured fields
+logger.Info(fmt.Sprintf("Uploaded %s in %d ms", fileName, elapsed))
+logger.Debug(fmt.Sprintf("buildSnapshot: generated keys in %d ms", elapsed))
+```
+
+**Hybrid logs** (formatted message plus some key-value pairs) should also be converted so the message stays static:
+
+```go
+// Bad
+logger.Info(fmt.Sprintf("%s route", action), "name", name)
+
+// Good
+logger.Info("Updated notification route", "action", action, "name", name)
+```
+
+Use camelCase for log keys (for example, `durationMs`, `fileName`, `pluginId`).
+
+#### Exceptions
+
+The following are allowed to use format-string style logging because they adapt third-party APIs or human-facing CLI output:
+
+- Third-party logger bridges (for example, XORM adapters in `pkg/services/sqlstore/logger.go` and `pkg/util/xorm/syslogger.go`)
+- Plugin CLI pretty logging in `pkg/plugins/log/infra_wrapper.go` (`PrettyLogger` `*f` methods)
+- Build tooling under `pkg/build/` and `scripts/`
+
+New application code outside these exceptions must use structured logging.
+
+#### Enforcement
+
+A [`scripts/check-structured-logging.sh`](../scripts/check-structured-logging.sh) script flags `fmt.Sprintf`/`fmt.Sprint` passed directly to `Debug`, `Info`, `Warn`, `Error`, or `Warning` log methods outside documented exceptions.
+
+A custom [ruleguard](https://github.com/quasilyte/go-ruleguard) rule (`structuredlogmsg`) in [`pkg/ruleguard.rules.go`](../pkg/ruleguard.rules.go) mirrors this check for when `gocritic`/`ruleguard` is enabled in `.golangci.yml`.
 
 ### Validate and sanitize input coming from user input
 

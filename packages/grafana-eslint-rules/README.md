@@ -294,3 +294,7 @@ interface LoadedProperties extends EventProperty {
   numberOfItems: number;
 }
 ```
+
+### `no-formatted-monitoring-logs`
+
+Disallow template literal messages with interpolations in monitoring log helpers (`logInfo`, `logWarning`, `logDebug`). Use a stable message string and pass dynamic values in the `LogContext` object instead. See [frontend-logging.md](../../contribute/style-guides/frontend-logging.md).

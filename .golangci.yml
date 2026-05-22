@@ -219,11 +219,13 @@ linters:
     exhaustive:
       default-signifies-exhaustive: true
     gocritic:
+      disable-all: true
       enabled-checks:
         - ruleguard
       settings:
         ruleguard:
           rules: pkg/ruleguard.rules.go
+          failOn: dsl
     misspell:
       ignore-rules:
         - Unknwon

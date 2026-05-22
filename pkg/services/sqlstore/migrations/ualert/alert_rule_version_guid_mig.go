@@ -196,7 +196,7 @@ func (c cleanUpRuleVersionsMigration) Exec(sess *xorm.Session, mg *migrator.Migr
 			return err
 		}
 
-		mg.Logger.Debug(fmt.Sprintf("Batch %d of %d processed", i+1, batches))
+		mg.Logger.Debug("Alert rule version GUID migration batch processed", "batch", i+1, "batches", batches)
 	}
 	return nil
 }
