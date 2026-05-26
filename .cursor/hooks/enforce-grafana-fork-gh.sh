@@ -19,26 +19,26 @@ if [[ "$COMMAND_LC" =~ (^|[[:space:]])(create|edit|merge|close|reopen|delete|tra
 fi
 
 targets_upstream="false"
-if [[ "$COMMAND_LC" =~ (--repo|-r)[[:space:]]*grafana/grafana ]] \
+if [[ "$COMMAND_LC" =~ (--repo|-r)(=|[[:space:]]+)grafana/grafana ]] \
   || [[ "$COMMAND_LC" =~ github\.com/grafana/grafana ]] \
   || [[ "$COMMAND_LC" =~ (^|[[:space:]])grafana/grafana([[:space:]]|$) ]]; then
   targets_upstream="true"
 fi
 
 targets_personal_fork="false"
-if [[ "$COMMAND_LC" =~ (--repo|-r)[[:space:]]*aarongajewski/grafana ]] \
+if [[ "$COMMAND_LC" =~ (--repo|-r)(=|[[:space:]]+)aarongajewski/grafana ]] \
   || [[ "$COMMAND_LC" =~ github\.com/aarongajewski/grafana ]]; then
   targets_personal_fork="true"
 fi
 
 targets_fieldsphere_fork="false"
-if [[ "$COMMAND_LC" =~ (--repo|-r)[[:space:]]*fieldsphere/grafana ]] \
+if [[ "$COMMAND_LC" =~ (--repo|-r)(=|[[:space:]]+)fieldsphere/grafana ]] \
   || [[ "$COMMAND_LC" =~ github\.com/fieldsphere/grafana ]]; then
   targets_fieldsphere_fork="true"
 fi
 
 has_explicit_repo="false"
-if [[ "$COMMAND_LC" =~ (--repo|-r)[[:space:]]+[^[:space:]]+ ]]; then
+if [[ "$COMMAND_LC" =~ (--repo|-r)(=|[[:space:]]+)[^[:space:]]+ ]]; then
   has_explicit_repo="true"
 fi
 
