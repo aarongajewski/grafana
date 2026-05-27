@@ -139,7 +139,7 @@ Build a specific plugin: `yarn workspace @grafana-plugins/<name> dev`
 ### Prerequisites
 
 - **Node.js v24.x** (see `.nvmrc` for exact version). Use `nvm install` / `nvm use` to match.
-- **Go 1.25.7** (see `go.mod`). Pre-installed in the VM.
+- **Go 1.25.9** (see `go.mod`). Pre-installed in the VM.
 - **Yarn 4.11.0** via corepack (bundled in `.yarn/releases/`). Run `corepack enable` if `yarn` is not found.
 - **GCC** required for CGo/SQLite compilation of the backend.
 
@@ -148,6 +148,7 @@ Build a specific plugin: `yarn workspace @grafana-plugins/<name> dev`
 - **Backend**: `make run` — builds and starts Grafana backend with hot-reload (air) on `localhost:3000`. Default login: `admin`/`admin`. First build takes ~3 minutes due to debug symbols (`-gcflags all=-N -l`); subsequent hot-reload rebuilds are faster.
 - **Frontend**: `yarn start` — starts webpack dev server that watches for changes. The backend proxies to it. First compile takes ~45s.
 - No external databases required — Grafana uses embedded SQLite by default.
+- **PATH caveat**: The Cloud VM has a system node at `/exec-daemon/node` that takes precedence. The update script prepends nvm's path (`/home/ubuntu/.nvm/versions/node/v24.11.0/bin`) to `$PATH`. If `node --version` shows the wrong version, ensure this PATH export is active in your shell.
 
 ### Testing gotchas
 
