@@ -7,7 +7,7 @@ import { TextLink, useStyles2 } from '@grafana/ui';
 import whatsNew from '../data/whatsNew.json';
 import { type WhatsNewEntry } from '../types';
 
-const entries = whatsNew as WhatsNewEntry[];
+const entries: WhatsNewEntry[] = whatsNew;
 
 export function WhatsNewCard() {
   const styles = useStyles2(getStyles);

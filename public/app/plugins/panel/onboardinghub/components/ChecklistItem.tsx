@@ -19,7 +19,7 @@ export function ChecklistItem({ definition, entry, loading, onRetry }: Props) {
   const busy = Boolean(loading) || entry.status === 'in-progress';
 
   return (
-    <li className={styles.row} role="checkbox" aria-checked={done} aria-busy={busy}>
+    <div className={styles.row} role="checkbox" aria-checked={done} aria-busy={busy}>
       <div className={styles.icon} aria-hidden="true">
         <Icon name={done ? 'check-circle' : definition.icon} />
       </div>
@@ -45,7 +45,7 @@ export function ChecklistItem({ definition, entry, loading, onRetry }: Props) {
           </LinkButton>
         )}
       </div>
-    </li>
+    </div>
   );
 }
 

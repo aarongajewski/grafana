@@ -17,12 +17,12 @@ export function OnboardingHubPanel({ id }: PanelProps) {
   const [dismissed, setDismissed] = useState(() => store.getBool(ONBOARDING_HUB_DISMISSED_KEY, false));
 
   useEffect(() => {
-    if (config.featureToggles.onboardingHub && dismissed) {
+    if (isOnboardingHubEnabled() && dismissed) {
       removePanelAndReflow(id);
     }
   }, [dismissed, id]);
 
-  if (!config.featureToggles.onboardingHub || dismissed) {
+  if (!isOnboardingHubEnabled() || dismissed) {
     return null;
   }
 
@@ -46,11 +46,26 @@ export function OnboardingHubPanel({ id }: PanelProps) {
   );
 }
 
+function isOnboardingHubEnabled() {
+  if (config.buildInfo.env === 'development' && store.getBool('onboarding.hub.forceEnabled', false)) {
+    return true;
+  }
+
+  return (
+    hasOnboardingHubToggle(config.featureToggles) ||
+    hasOnboardingHubToggle(window.grafanaBootData?.settings?.featureToggles ?? {})
+  );
+}
+
+function hasOnboardingHubToggle(featureToggles: object) {
+  return 'onboardingHub' in featureToggles && featureToggles.onboardingHub === true;
+}
+
 export function removePanelAndReflow(panelId: number) {
   const dashboard = getDashboardSrv().getCurrent();
   const panel = dashboard?.getPanelById(panelId);
 
-  if (!dashboard || !panel) {
+  if (!dashboard || !panel?.gridPos) {
     return;
   }
 

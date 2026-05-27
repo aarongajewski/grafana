@@ -9,6 +9,7 @@ import {
   type PanelPlugin,
   type PluginExtensionPanelContext,
   PluginExtensionPoints,
+  store,
   urlUtil,
 } from '@grafana/data';
 import { t } from '@grafana/i18n';
@@ -241,6 +242,20 @@ export function panelMenuBehavior(menu: VizPanelMenu) {
       });
     }
 
+    if (shouldShowResetOnboardingHubAction(dashboard, panel)) {
+      moreSubMenu.push({
+        text: t('panel.header-menu.reset-onboarding-hub', 'Reset onboarding hub'),
+        iconClassName: 'sync',
+        onClick: (event) => {
+          event.preventDefault();
+          store.delete('onboarding.hub.dismissed');
+          store.delete('onboarding.sample.provisioned');
+          store.delete('onboarding.sample.workspace');
+          window.location.reload();
+        },
+      });
+    }
+
     if (hasLegendOptions(panel.state.options) && !isEditingPanel) {
       moreSubMenu.push({
         text: panel.state.options.legend.showLegend
@@ -386,6 +401,14 @@ export function panelMenuBehavior(menu: VizPanelMenu) {
   };
 
   asyncFunc();
+}
+
+function shouldShowResetOnboardingHubAction(dashboard: DashboardScene, panel: VizPanel): boolean {
+  if (panel.state.pluginId === 'onboardinghub') {
+    return true;
+  }
+
+  return dashboard.state.title === 'Home' && panel.state.pluginId === 'welcome';
 }
 
 async function getExploreMenuItem(panel: VizPanel): Promise<PanelMenuItem | undefined> {

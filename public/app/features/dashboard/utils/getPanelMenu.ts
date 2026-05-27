@@ -1,6 +1,6 @@
 import { type PanelMenuItem, store, urlUtil, type PluginExtensionLink } from '@grafana/data';
 import { t } from '@grafana/i18n';
-import { config, locationService } from '@grafana/runtime';
+import { locationService } from '@grafana/runtime';
 import { createErrorNotification } from 'app/core/copy/appNotification';
 import { notifyApp } from 'app/core/reducers/appNotification';
 import { contextSrv } from 'app/core/services/context_srv';
@@ -319,10 +319,6 @@ export function getPanelMenu(
 }
 
 function shouldShowResetOnboardingHubAction(dashboard: DashboardModel, panel: PanelModel): boolean {
-  if (config.buildInfo.env !== 'development') {
-    return false;
-  }
-
   if (panel.type === 'onboardinghub') {
     return true;
   }

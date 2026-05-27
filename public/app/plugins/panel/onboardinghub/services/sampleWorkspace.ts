@@ -67,7 +67,10 @@ export function getStoredWorkspaceResult(): SampleWorkspaceResult {
   const storedValue = store.get(SAMPLE_WORKSPACE_STORAGE_KEY);
   if (typeof storedValue === 'string') {
     try {
-      return JSON.parse(storedValue) as SampleWorkspaceResult;
+      const parsed = JSON.parse(storedValue);
+      if (isSampleWorkspaceResult(parsed)) {
+        return parsed;
+      }
     } catch {
       // Fall through to stable defaults.
     }
@@ -78,6 +81,14 @@ export function getStoredWorkspaceResult(): SampleWorkspaceResult {
     dashboardUids: sampleWorkspaceDashboardLinks.map((link) => link.uid),
     links: sampleWorkspaceDashboardLinks,
   };
+}
+
+function isSampleWorkspaceResult(value: unknown): value is SampleWorkspaceResult {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  return 'folderUid' in value && 'dashboardUids' in value && 'links' in value;
 }
 
 async function ensureTestDataDatasource(): Promise<void> {

@@ -7,7 +7,7 @@ import { Trans, t } from '@grafana/i18n';
 import { Button, Spinner, useStyles2 } from '@grafana/ui';
 
 import { getOnboardingProgress } from '../services/progress';
-import { type ChecklistDefinition, type ChecklistEntry, type ChecklistStepId, type OnboardingProgress } from '../types';
+import { type ChecklistDefinition, type ChecklistStepId, type OnboardingProgress } from '../types';
 
 import { ChecklistItem } from './ChecklistItem';
 
@@ -111,7 +111,7 @@ export function Checklist({
           )}
         </div>
       ) : (
-        <ul className={styles.list}>
+        <div className={styles.list}>
           {progress.entries.map((entry) => (
             <ChecklistItem
               key={entry.id}
@@ -121,7 +121,7 @@ export function Checklist({
               onRetry={refresh}
             />
           ))}
-        </ul>
+        </div>
       )}
     </section>
   );
@@ -209,7 +209,9 @@ const getStyles = (theme: GrafanaTheme2) => ({
   progressFill: css({
     height: '100%',
     background: theme.colors.primary.main,
-    transition: 'width 200ms ease',
+    [theme.transitions.handleMotion('no-preference')]: {
+      transition: 'width 200ms ease',
+    },
   }),
   list: css({
     padding: 0,

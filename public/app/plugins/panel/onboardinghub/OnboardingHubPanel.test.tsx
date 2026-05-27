@@ -29,12 +29,12 @@ jest.mock('./components/WhatsNewCard', () => ({
 describe('OnboardingHubPanel', () => {
   beforeEach(() => {
     store.delete(ONBOARDING_HUB_DISMISSED_KEY);
-    config.featureToggles.onboardingHub = true;
+    Object.assign(config.featureToggles, { onboardingHub: true });
     getCurrent.mockReset();
   });
 
   it('renders nothing when the feature toggle is off', () => {
-    config.featureToggles.onboardingHub = false;
+    Object.assign(config.featureToggles, { onboardingHub: false });
 
     const { container } = render(<OnboardingHubPanel {...getPanelProps({})} />);
 
