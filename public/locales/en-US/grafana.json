@@ -12337,6 +12337,73 @@
       "error": "Login provider denied login request"
     }
   },
+  "onboardinghub": {
+    "checklist": {
+      "alert-action": "New alert rule",
+      "alert-description": "Get notified when important signals change.",
+      "alert-title": "Set up an alert rule",
+      "all-set-description": "Your Grafana workspace has the essentials in place. You can dismiss this panel whenever you are ready.",
+      "all-set-title": "You're all set",
+      "completed-count": "{{completed}} of {{total}} complete",
+      "dashboard-action": "New dashboard",
+      "dashboard-description": "Turn your data into panels, rows, and reusable views.",
+      "dashboard-title": "Create your first dashboard",
+      "datasource-action": "Add data source",
+      "datasource-description": "Bring metrics, logs, traces, or profiles into Grafana.",
+      "datasource-title": "Connect a data source",
+      "dismiss-this-panel": "Dismiss this panel",
+      "folder-action": "New folder",
+      "folder-description": "Group dashboards by team, service, or project.",
+      "folder-title": "Organize with a folder",
+      "label": "Onboarding checklist",
+      "loading": "Checking setup progress",
+      "loading-label": "Onboarding progress",
+      "progress-aria-label": "Onboarding progress",
+      "retry": "Retry",
+      "status-checking": "Checking",
+      "status-done": "Done",
+      "status-needs-retry": "Needs retry",
+      "status-pending": "Pending",
+      "status-unavailable": "Unavailable",
+      "teammate-action": "Manage users",
+      "teammate-description": "Share your workspace and collaborate faster.",
+      "teammate-title": "Invite a teammate",
+      "title": "Setup progress"
+    },
+    "dismiss-bar": {
+      "dismiss": "Dismiss",
+      "dismiss-aria-label": "Dismiss Onboarding Hub",
+      "subtitle": "Track setup progress, create sample dashboards, and catch up on what is new in Grafana.",
+      "title": "Make this workspace yours"
+    },
+    "sample-workspace": {
+      "description": "Import three TestData-backed dashboards so a fresh Grafana is explorable immediately.",
+      "error-title": "Could not create sample workspace",
+      "label": "Sample workspace",
+      "open-business-funnel": "Open Business Funnel",
+      "open-system-metrics": "Open System Metrics",
+      "open-web-traffic": "Open Web Traffic",
+      "retry": "Retry",
+      "success": "Sample workspace created.",
+      "title": "Try a sample workspace",
+      "try-it": "Try it",
+      "unknown-error": "An unexpected error occurred."
+    },
+    "whats-new": {
+      "entry-0-summary": "Track setup progress from the home dashboard and jump directly to the next best action.",
+      "entry-0-title": "Explore faster with guided first-run steps",
+      "entry-1-summary": "Create TestData-backed dashboards for web traffic, systems, and business metrics without external dependencies.",
+      "entry-1-title": "Sample workspace in one click",
+      "entry-2-summary": "Folder and dashboard workflows now surface common actions closer to where you work.",
+      "entry-2-title": "Dashboards are easier to organize",
+      "entry-3-summary": "New alert rule experiences make it simpler to connect signals to notifications.",
+      "entry-3-title": "Alerting setup keeps improving",
+      "label": "What's new",
+      "read-more": "Read more",
+      "title": "What's new",
+      "version-date": "Grafana {{version}} · {{date}}"
+    }
+  },
   "options-ui": {
     "color": {
       "clear-tooltip": "Clear settings"
@@ -12492,6 +12559,7 @@
       "query": "Query",
       "remove": "Remove",
       "replace-library-panel": "Replace library panel",
+      "reset-onboarding-hub": "Reset onboarding hub",
       "share": "Share",
       "show-legend": "Show legend",
       "styles": "Styles",
