@@ -93,11 +93,12 @@ function validateSavedSearches(data: unknown, storageKey: string): SavedSearch[]
 
   // If the whole array failed, try to salvage individual valid entries
   if (!Array.isArray(data)) {
-    logWarning(`Saved searches data for ${storageKey} is not an array, returning empty array`);
+    logWarning('Saved searches data is not an array, returning empty array', { storageKey });
     return [];
   }
 
-  logWarning(`Saved searches validation failed for ${storageKey}, filtering invalid entries`, {
+  logWarning('Saved searches validation failed, filtering invalid entries', {
+    storageKey,
     issues: JSON.stringify(result.error.issues),
   });
 

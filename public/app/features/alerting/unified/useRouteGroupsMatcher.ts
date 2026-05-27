@@ -63,7 +63,7 @@ export function useRouteGroupsMatcher() {
 
       const timeSpent = performance.now() - startTime;
 
-      logInfo(`Route Groups Matched in  ${timeSpent} ms`, {
+      logInfo('Route groups matched', {
         matchingTime: timeSpent.toString(),
         alertGroupsCount: alertGroups.length.toString(),
         // Counting all nested routes might be too time-consuming, so we only count the first level
@@ -85,7 +85,7 @@ export function useRouteGroupsMatcher() {
 
       const timeSpent = performance.now() - startTime;
 
-      logInfo(`Instances Matched in  ${timeSpent} ms`, {
+      logInfo('Instances matched', {
         matchingTime: timeSpent.toString(),
         instancesToMatchCount: instances.length.toString(),
         // Counting all nested routes might be too time-consuming, so we only count the first level

@@ -1,3 +1,5 @@
+// Package log provides structured logging for plugins.
+// PrettyLogger *f methods are reserved for human-facing CLI output and are excluded from structured logging lint rules.
 package log
 
 import (

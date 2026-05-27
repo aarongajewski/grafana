@@ -499,3 +499,27 @@ func badlock(m fluent.Matcher) {
 	m.Match(`$mu.Lock(); defer $mu.RUnlock()`).Report(`maybe $mu.RLock() was intended?`)
 	m.Match(`$mu.RLock(); defer $mu.Unlock()`).Report(`maybe $mu.Lock() was intended?`)
 }
+
+// structuredlogmsg discourages format-string style messages passed to Grafana loggers.
+// See contribute/backend/instrumentation.md for exceptions (third-party bridges and CLI output).
+func structuredlogmsg(m fluent.Matcher) {
+	m.Match(
+		`$log.Debug(fmt.Sprintf($*_))`,
+		`$log.Info(fmt.Sprintf($*_))`,
+		`$log.Warn(fmt.Sprintf($*_))`,
+		`$log.Error(fmt.Sprintf($*_))`,
+		`$log.Warning(fmt.Sprintf($*_))`,
+		`$log.Debug(fmt.Sprint($*_))`,
+		`$log.Info(fmt.Sprint($*_))`,
+		`$log.Warn(fmt.Sprint($*_))`,
+		`$log.Error(fmt.Sprint($*_))`,
+		`$log.Warning(fmt.Sprint($*_))`,
+	).
+		Where(
+			!m.File().PkgPath.Matches(`github.com/grafana/grafana/pkg/services/sqlstore$`) &&
+				!m.File().PkgPath.Matches(`github.com/grafana/grafana/pkg/util/xorm$`) &&
+				!m.File().PkgPath.Matches(`github.com/grafana/grafana/pkg/plugins/log$`) &&
+				!m.File().PkgPath.Matches(`github.com/grafana/grafana/pkg/build`),
+		).
+		Report("use structured logging with a static message and key-value pairs instead of fmt.Sprintf or fmt.Sprint in log calls")
+}

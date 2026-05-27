@@ -89,7 +89,7 @@ export function getGeneralSandboxDistortionMap() {
 }
 
 function failToSet(originalAttrOrMethod: unknown, meta: SandboxPluginMeta) {
-  logWarning(`Plugin ${meta.id} tried to set a sandboxed property`, {
+  logWarning('Plugin tried to set a sandboxed property', {
     pluginId: meta.id,
     attrOrMethod: String(originalAttrOrMethod),
     entity: 'window',
@@ -108,7 +108,7 @@ function distortIframeAttributes(distortions: DistortionMap) {
     if (descriptor) {
       function fail(originalAttrOrMethod: unknown, meta: SandboxPluginMeta) {
         const pluginId = meta.id;
-        logWarning(`Plugin ${pluginId} tried to access iframe.${property}`, {
+        logWarning('Plugin tried to access forbidden iframe property', {
           pluginId,
           attrOrMethod: property,
           entity: 'iframe',
@@ -163,7 +163,7 @@ function distortConsole(distortions: DistortionMap) {
 function distortAlert(distortions: DistortionMap) {
   function getAlertDistortion(originalAttrOrMethod: unknown, meta: SandboxPluginMeta) {
     const pluginId = meta.id;
-    logWarning(`Plugin ${pluginId} accessed window.alert`, {
+    logWarning('Plugin accessed window.alert', {
       pluginId,
       attrOrMethod: 'alert',
       entity: 'window',
@@ -194,7 +194,7 @@ function distortInnerHTML(distortions: DistortionMap) {
         const lowerCase = String(arg || '').toLowerCase();
         for (const forbiddenElement of forbiddenElements) {
           if (lowerCase.includes('<' + forbiddenElement)) {
-            logWarning(`Plugin ${pluginId} tried to set ${forbiddenElement} in innerHTML`, {
+            logWarning('Plugin tried to set forbidden element in innerHTML', {
               pluginId,
               attrOrMethod: 'innerHTML',
               param: forbiddenElement,
@@ -206,7 +206,7 @@ function distortInnerHTML(distortions: DistortionMap) {
         }
         // prevent some dom operations that use direct callbacks
         if (lowerCase.match(/onerror|onload|onsuccess|onbeforeunload/)) {
-          logWarning(`Plugin ${pluginId} tried to set forbidden attribute in innerHTML`, {
+          logWarning('Plugin tried to set forbidden attribute in innerHTML', {
             pluginId,
             attrOrMethod: 'innerHTML',
             param: arg,
@@ -243,7 +243,7 @@ function distortCreateElement(distortions: DistortionMap) {
     const pluginId = meta.id;
     return function createElementDistortion(this: HTMLElement, arg?: string, options?: unknown) {
       if (arg && forbiddenElements.includes(arg)) {
-        logWarning(`Plugin ${pluginId} tried to create ${arg}`, {
+        logWarning('Plugin tried to create forbidden element', {
           pluginId,
           attrOrMethod: 'createElement',
           param: arg,
@@ -269,7 +269,7 @@ function distortInsert(distortions: DistortionMap) {
       const nodeType = node?.nodeName?.toLowerCase() || '';
 
       if (node && forbiddenElements.includes(nodeType)) {
-        logWarning(`Plugin ${pluginId} tried to insert ${nodeType}`, {
+        logWarning('Plugin tried to insert forbidden element', {
           pluginId,
           attrOrMethod: 'insertChild',
           param: nodeType,
@@ -288,7 +288,7 @@ function distortInsert(distortions: DistortionMap) {
     return function insertAdjacentElementDistortion(this: HTMLElement, position?: string, node?: Node) {
       const nodeType = node?.nodeName?.toLowerCase() || '';
       if (node && forbiddenElements.includes(nodeType)) {
-        logWarning(`Plugin ${pluginId} tried to insert ${nodeType}`, {
+        logWarning('Plugin tried to insert forbidden element', {
           pluginId,
           attrOrMethod: 'insertAdjacentElement',
           param: nodeType,
@@ -331,7 +331,7 @@ function distortAppend(distortions: DistortionMap) {
       acceptedNodes = filteredAcceptedNodes;
 
       if (acceptedNodes.length !== filteredAcceptedNodes.length) {
-        logWarning(`Plugin ${pluginId} tried to append fobiddenElements`, {
+        logWarning('Plugin tried to append forbidden elements', {
           pluginId,
           attrOrMethod: 'append',
           param: args?.filter((node) => forbiddenElements.includes(node.nodeName.toLowerCase()))?.join(',') || '',
@@ -353,7 +353,7 @@ function distortAppend(distortions: DistortionMap) {
     return function appendChildDistortion(this: HTMLElement, arg?: Node) {
       const nodeType = arg?.nodeName?.toLowerCase() || '';
       if (arg && forbiddenElements.includes(nodeType)) {
-        logWarning(`Plugin ${pluginId} tried to append ${nodeType}`, {
+        logWarning('Plugin tried to append forbidden element', {
           pluginId,
           attrOrMethod: 'appendChild',
           param: nodeType,
