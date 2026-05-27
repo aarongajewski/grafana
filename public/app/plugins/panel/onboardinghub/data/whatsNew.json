@@ -1,0 +1,30 @@
+[
+  {
+    "version": "13.0",
+    "date": "2026-05-27",
+    "title": "Explore faster with guided first-run steps",
+    "summary": "Track setup progress from the home dashboard and jump directly to the next best action.",
+    "href": "https://grafana.com/docs/grafana/next/whatsnew/"
+  },
+  {
+    "version": "13.0",
+    "date": "2026-05-27",
+    "title": "Sample workspace in one click",
+    "summary": "Create TestData-backed dashboards for web traffic, systems, and business metrics without external dependencies.",
+    "href": "https://grafana.com/docs/grafana/latest/datasources/testdata/"
+  },
+  {
+    "version": "12.3",
+    "date": "2026-04-15",
+    "title": "Dashboards are easier to organize",
+    "summary": "Folder and dashboard workflows now surface common actions closer to where you work.",
+    "href": "https://grafana.com/docs/grafana/latest/dashboards/"
+  },
+  {
+    "version": "12.3",
+    "date": "2026-04-15",
+    "title": "Alerting setup keeps improving",
+    "summary": "New alert rule experiences make it simpler to connect signals to notifications.",
+    "href": "https://grafana.com/docs/grafana/latest/alerting/"
+  }
+]

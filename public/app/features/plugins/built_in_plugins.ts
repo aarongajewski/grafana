@@ -39,6 +39,8 @@ const logsPanel = async () => await import(/* webpackChunkName: "logsPanel" */ '
 const logsTablePanel = async () =>
   await import(/* webpackChunkName: "logsTablePanel" */ 'app/plugins/panel/logstable/module');
 const newsPanel = async () => await import(/* webpackChunkName: "newsPanel" */ 'app/plugins/panel/news/module');
+const onboardingHubPanel = async () =>
+  await import(/* webpackChunkName: "onboardingHubPanel" */ 'app/plugins/panel/onboardinghub/module');
 const pieChartPanel = async () =>
   await import(/* webpackChunkName: "pieChartPanel" */ 'app/plugins/panel/piechart/module');
 const statPanel = async () => await import(/* webpackChunkName: "statPanel" */ 'app/plugins/panel/stat/module');
@@ -89,6 +91,7 @@ const builtInPlugins: Record<string, System.Module | (() => Promise<System.Modul
   'core:plugin/heatmap': heatmapPanel,
   'core:plugin/table': tablePanel,
   'core:plugin/news': newsPanel,
+  'core:plugin/onboardinghub': onboardingHubPanel,
   'core:plugin/live': livePanel,
   'core:plugin/stat': statPanel,
   'core:plugin/debug': debugPanel,

@@ -1,6 +1,6 @@
-import { type PanelMenuItem, urlUtil, type PluginExtensionLink } from '@grafana/data';
+import { type PanelMenuItem, store, urlUtil, type PluginExtensionLink } from '@grafana/data';
 import { t } from '@grafana/i18n';
-import { locationService } from '@grafana/runtime';
+import { config, locationService } from '@grafana/runtime';
 import { createErrorNotification } from 'app/core/copy/appNotification';
 import { notifyApp } from 'app/core/reducers/appNotification';
 import { contextSrv } from 'app/core/services/context_srv';
@@ -282,6 +282,19 @@ export function getPanelMenu(
     });
   }
 
+  if (shouldShowResetOnboardingHubAction(dashboard, panel)) {
+    subMenu.push({
+      text: t('panel.header-menu.reset-onboarding-hub', 'Reset onboarding hub'),
+      onClick: (event: React.MouseEvent) => {
+        event.preventDefault();
+        store.delete('onboarding.hub.dismissed');
+        store.delete('onboarding.sample.provisioned');
+        store.delete('onboarding.sample.workspace');
+        window.location.reload();
+      },
+    });
+  }
+
   if (subMenu.length) {
     menu.push({
       type: 'submenu',
@@ -303,4 +316,16 @@ export function getPanelMenu(
   }
 
   return menu;
+}
+
+function shouldShowResetOnboardingHubAction(dashboard: DashboardModel, panel: PanelModel): boolean {
+  if (config.buildInfo.env !== 'development') {
+    return false;
+  }
+
+  if (panel.type === 'onboardinghub') {
+    return true;
+  }
+
+  return dashboard.title === 'Home' && panel.type === 'welcome';
 }

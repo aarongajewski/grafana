@@ -1,0 +1,62 @@
+{
+  "id": null,
+  "uid": "onb-system-metrics",
+  "title": "System Metrics",
+  "tags": ["sample"],
+  "timezone": "browser",
+  "schemaVersion": 41,
+  "version": 0,
+  "refresh": "30s",
+  "time": { "from": "now-3h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "CPU and memory trend",
+      "datasource": { "type": "grafana-testdata-datasource", "uid": "onb-testdata" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "custom": { "drawStyle": "line", "fillOpacity": 10 } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "grafana-testdata-datasource", "uid": "onb-testdata" }, "scenarioId": "predictable_pulse", "pulseWave": { "onCount": 4, "offCount": 3, "onValue": 78, "offValue": 31, "timeStep": 60 }, "alias": "cpu" },
+        { "refId": "B", "datasource": { "type": "grafana-testdata-datasource", "uid": "onb-testdata" }, "scenarioId": "random_walk", "seriesCount": 1, "alias": "memory" }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Healthy hosts",
+      "datasource": { "type": "grafana-testdata-datasource", "uid": "onb-testdata" },
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 0 },
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0, "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 8 }] } }, "overrides": [] },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "orientation": "auto", "colorMode": "background", "graphMode": "none", "justifyMode": "center" },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "grafana-testdata-datasource", "uid": "onb-testdata" }, "scenarioId": "csv_metric_values", "stringInput": "8,9,9,10,10,9" }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "bargauge",
+      "title": "Disk usage",
+      "datasource": { "type": "grafana-testdata-datasource", "uid": "onb-testdata" },
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 0 },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "orange", "value": 70 }, { "color": "red", "value": 90 }] } }, "overrides": [] },
+      "options": { "displayMode": "basic", "orientation": "horizontal", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showUnfilled": true },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "grafana-testdata-datasource", "uid": "onb-testdata" }, "scenarioId": "csv_metric_values", "stringInput": "52,64,73,41" }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "table",
+      "title": "Slow services",
+      "datasource": { "type": "grafana-testdata-datasource", "uid": "onb-testdata" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 },
+      "fieldConfig": { "defaults": { "custom": { "align": "auto", "cellOptions": { "type": "auto" } } }, "overrides": [] },
+      "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false } },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "grafana-testdata-datasource", "uid": "onb-testdata" }, "scenarioId": "slow_query", "format": "table", "stringInput": "inventory,checkout,search,profile" }
+      ]
+    }
+  ]
+}

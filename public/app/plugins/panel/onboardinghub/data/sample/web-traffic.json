@@ -1,0 +1,61 @@
+{
+  "id": null,
+  "uid": "onb-web-traffic",
+  "title": "Web Traffic",
+  "tags": ["sample"],
+  "timezone": "browser",
+  "schemaVersion": 41,
+  "version": 0,
+  "refresh": "30s",
+  "time": { "from": "now-6h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Requests per second",
+      "datasource": { "type": "grafana-testdata-datasource", "uid": "onb-testdata" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "fieldConfig": { "defaults": { "unit": "reqps", "custom": { "drawStyle": "line", "fillOpacity": 15 } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "single" } },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "grafana-testdata-datasource", "uid": "onb-testdata" }, "scenarioId": "random_walk", "seriesCount": 3, "alias": "edge" }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Conversion rate",
+      "datasource": { "type": "grafana-testdata-datasource", "uid": "onb-testdata" },
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 0 },
+      "fieldConfig": { "defaults": { "unit": "percent", "decimals": 1, "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 65 }] } }, "overrides": [] },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "orientation": "auto", "colorMode": "value", "graphMode": "area", "justifyMode": "auto" },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "grafana-testdata-datasource", "uid": "onb-testdata" }, "scenarioId": "csv_metric_values", "stringInput": "62,64,65,68,71,70,74" }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "bargauge",
+      "title": "Traffic by channel",
+      "datasource": { "type": "grafana-testdata-datasource", "uid": "onb-testdata" },
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 0 },
+      "fieldConfig": { "defaults": { "unit": "short", "min": 0, "max": 100, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "orange", "value": 70 }] } }, "overrides": [] },
+      "options": { "displayMode": "gradient", "orientation": "horizontal", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showUnfilled": true },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "grafana-testdata-datasource", "uid": "onb-testdata" }, "scenarioId": "csv_metric_values", "stringInput": "42,58,74,81" }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "table",
+      "title": "Top paths",
+      "datasource": { "type": "grafana-testdata-datasource", "uid": "onb-testdata" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 },
+      "fieldConfig": { "defaults": { "custom": { "align": "auto", "cellOptions": { "type": "auto" } } }, "overrides": [] },
+      "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false } },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "grafana-testdata-datasource", "uid": "onb-testdata" }, "scenarioId": "csv_metric_values", "format": "table", "alias": "views", "stringInput": "980,742,621,404,302,211" }
+      ]
+    }
+  ]
+}

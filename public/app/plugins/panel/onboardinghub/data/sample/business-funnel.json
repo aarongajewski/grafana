@@ -1,0 +1,62 @@
+{
+  "id": null,
+  "uid": "onb-business-funnel",
+  "title": "Business Funnel",
+  "tags": ["sample"],
+  "timezone": "browser",
+  "schemaVersion": 41,
+  "version": 0,
+  "refresh": "1m",
+  "time": { "from": "now-24h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Leads and trials",
+      "datasource": { "type": "grafana-testdata-datasource", "uid": "onb-testdata" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "fieldConfig": { "defaults": { "unit": "short", "custom": { "drawStyle": "bars", "fillOpacity": 35 } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "grafana-testdata-datasource", "uid": "onb-testdata" }, "scenarioId": "csv_metric_values", "stringInput": "120,132,141,158,177,190,203", "alias": "leads" },
+        { "refId": "B", "datasource": { "type": "grafana-testdata-datasource", "uid": "onb-testdata" }, "scenarioId": "csv_metric_values", "stringInput": "28,31,35,42,49,53,61", "alias": "trials" }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Pipeline value",
+      "datasource": { "type": "grafana-testdata-datasource", "uid": "onb-testdata" },
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 0 },
+      "fieldConfig": { "defaults": { "unit": "currencyUSD", "decimals": 0, "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }, { "color": "green", "value": 50000 }] } }, "overrides": [] },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "orientation": "auto", "colorMode": "value", "graphMode": "area", "justifyMode": "auto" },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "grafana-testdata-datasource", "uid": "onb-testdata" }, "scenarioId": "csv_metric_values", "stringInput": "42000,47000,52000,61000,66000,72000" }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "bargauge",
+      "title": "Stage conversion",
+      "datasource": { "type": "grafana-testdata-datasource", "uid": "onb-testdata" },
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 0 },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "orange", "value": 35 }, { "color": "green", "value": 65 }] } }, "overrides": [] },
+      "options": { "displayMode": "gradient", "orientation": "horizontal", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showUnfilled": true },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "grafana-testdata-datasource", "uid": "onb-testdata" }, "scenarioId": "csv_metric_values", "stringInput": "88,63,41,27" }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "table",
+      "title": "Recent opportunities",
+      "datasource": { "type": "grafana-testdata-datasource", "uid": "onb-testdata" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 },
+      "fieldConfig": { "defaults": { "custom": { "align": "auto", "cellOptions": { "type": "auto" } } }, "overrides": [] },
+      "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false } },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "grafana-testdata-datasource", "uid": "onb-testdata" }, "scenarioId": "csv_metric_values", "format": "table", "alias": "amount", "stringInput": "12500,24100,8000,31750,14900" }
+      ]
+    }
+  ]
+}
