@@ -98,9 +98,9 @@ func TestGetHomeDashboard(t *testing.T) {
 			features:       featuremgmt.WithFeatures(featuremgmt.FlagOnboardingHub),
 			expectedPanels: map[string]int{
 				"onboardinghub": 0,
-				"welcome":       6,
-				"dashlist":      10,
-				"news":          10,
+				"welcome":       10,
+				"dashlist":      14,
+				"news":          14,
 			},
 		},
 		{

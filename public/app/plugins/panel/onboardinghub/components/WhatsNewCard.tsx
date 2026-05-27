@@ -94,6 +94,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
     borderRadius: theme.shape.radius.default,
     padding: theme.spacing(2),
     minHeight: '100%',
+    overflow: 'visible',
   }),
   title: css({
     margin: 0,

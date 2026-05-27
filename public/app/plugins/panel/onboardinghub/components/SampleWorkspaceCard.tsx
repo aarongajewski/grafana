@@ -173,11 +173,13 @@ const getStyles = (theme: GrafanaTheme2) => ({
     borderRadius: theme.shape.radius.default,
     padding: theme.spacing(2),
     minHeight: '100%',
+    overflow: 'visible',
   }),
   header: css({
     display: 'flex',
     gap: theme.spacing(1.5),
     marginBottom: theme.spacing(2),
+    alignItems: 'flex-start',
   }),
   iconCluster: css({
     color: theme.colors.primary.text,
@@ -195,7 +197,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
   }),
   success: css({
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: theme.spacing(1),
     color: theme.colors.success.text,
   }),
@@ -207,6 +209,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
     display: 'flex',
     gap: theme.spacing(1),
     flexWrap: 'wrap',
+    alignItems: 'center',
   }),
   errorBody: css({
     display: 'flex',

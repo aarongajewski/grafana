@@ -83,20 +83,31 @@ export function removePanelAndReflow(panelId: number) {
 
 const getStyles = (theme: GrafanaTheme2) => ({
   container: css({
-    height: '100%',
-    overflow: 'auto',
     padding: theme.spacing(2),
+    minHeight: '100%',
   }),
   grid: css({
     display: 'grid',
-    gridTemplateColumns: 'minmax(360px, 1.4fr) minmax(260px, 0.8fr) minmax(260px, 0.8fr)',
+    gridTemplateColumns: 'minmax(360px, 1.2fr) repeat(2, minmax(280px, 1fr))',
+    alignItems: 'stretch',
     gap: theme.spacing(2),
 
-    [theme.breakpoints.down('lg')]: {
+    [theme.breakpoints.down('xl')]: {
+      gridTemplateColumns: 'minmax(360px, 1.2fr) minmax(280px, 1fr)',
+    },
+
+    [theme.breakpoints.down('md')]: {
       gridTemplateColumns: '1fr',
     },
   }),
   checklist: css({
     minWidth: 0,
+    [theme.breakpoints.down('xl')]: {
+      gridColumn: '1 / -1',
+    },
+
+    [theme.breakpoints.down('md')]: {
+      gridColumn: 'auto',
+    },
   }),
 });

@@ -124,7 +124,7 @@ function createE2EHomeDashboard() {
     panels: [
       {
         datasource: null,
-        gridPos: { h: 6, w: 24, x: 0, y: 0 },
+        gridPos: { h: 10, w: 24, x: 0, y: 0 },
         id: 2,
         title: '',
         transparent: true,
@@ -132,7 +132,7 @@ function createE2EHomeDashboard() {
       },
       {
         datasource: null,
-        gridPos: { h: 3, w: 24, x: 0, y: 6 },
+        gridPos: { h: 3, w: 24, x: 0, y: 10 },
         id: 1,
         title: '',
         transparent: false,
@@ -141,7 +141,7 @@ function createE2EHomeDashboard() {
       {
         datasource: null,
         folderId: 0,
-        gridPos: { h: 15, w: 12, x: 0, y: 10 },
+        gridPos: { h: 15, w: 12, x: 0, y: 14 },
         id: 3,
         options: {
           showStarred: true,
@@ -158,7 +158,7 @@ function createE2EHomeDashboard() {
       },
       {
         datasource: null,
-        gridPos: { h: 15, w: 12, x: 12, y: 10 },
+        gridPos: { h: 15, w: 12, x: 12, y: 14 },
         id: 4,
         options: { feedUrl: 'https://grafana.com/blog/news.xml' },
         title: 'Latest from the blog',

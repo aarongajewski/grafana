@@ -43,8 +43,8 @@ describe('OnboardingHubPanel', () => {
 
   it('renders nothing when dismissed and removes itself from the dashboard', () => {
     store.set(ONBOARDING_HUB_DISMISSED_KEY, true);
-    const panel = { gridPos: { y: 0, h: 6 } };
-    const lowerPanel = { gridPos: { y: 6, h: 3 } };
+    const panel = { gridPos: { y: 0, h: 10 } };
+    const lowerPanel = { gridPos: { y: 10, h: 3 } };
     const dashboard = {
       panels: [panel, lowerPanel],
       getPanelById: jest.fn().mockReturnValue(panel),
