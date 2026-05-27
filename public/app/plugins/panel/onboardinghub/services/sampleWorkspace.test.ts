@@ -25,6 +25,15 @@ const backendDelete = jest.fn();
 const getList = jest.fn();
 const reload = jest.fn();
 
+interface BackendPostBody {
+  uid?: string;
+  title?: string;
+  dashboard?: {
+    uid: string;
+    title: string;
+  };
+}
+
 describe('provisionSampleWorkspace', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -35,7 +44,7 @@ describe('provisionSampleWorkspace', () => {
 
     getList.mockReturnValue([]);
     backendGet.mockRejectedValue({ status: 404 });
-    backendPost.mockImplementation((url: string, body: any) => {
+    backendPost.mockImplementation((url: string, body: BackendPostBody) => {
       if (url === '/api/datasources') {
         return Promise.resolve({ uid: body.uid });
       }
@@ -87,7 +96,7 @@ describe('provisionSampleWorkspace', () => {
   });
 
   it('rolls back dashboards created during a failed import run', async () => {
-    backendPost.mockImplementation((url: string, body: any) => {
+    backendPost.mockImplementation((url: string, body: BackendPostBody) => {
       if (url === '/api/datasources') {
         return Promise.resolve({ uid: body.uid });
       }
