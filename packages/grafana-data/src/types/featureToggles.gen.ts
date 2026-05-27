@@ -44,6 +44,11 @@ export interface FeatureToggles {
   */
   storage?: boolean;
   /**
+  * Enable the Onboarding Hub panel on the default home dashboard
+  * @default false
+  */
+  onboardingHub?: boolean;
+  /**
   * Allow elements nesting
   * @default false
   */

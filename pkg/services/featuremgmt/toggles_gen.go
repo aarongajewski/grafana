@@ -27,6 +27,10 @@ const (
 	// Configurable storage for dashboards, datasources, and resources
 	FlagStorage = "storage"
 
+	// FlagOnboardingHub
+	// Enable the Onboarding Hub panel on the default home dashboard
+	FlagOnboardingHub = "onboardingHub"
+
 	// FlagGrpcServer
 	// Run the GRPC server
 	FlagGrpcServer = "grpcServer"

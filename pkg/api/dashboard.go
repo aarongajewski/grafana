@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -32,6 +33,7 @@ import (
 	"github.com/grafana/grafana/pkg/services/dashboards"
 	"github.com/grafana/grafana/pkg/services/dashboards/dashboardaccess"
 	dashver "github.com/grafana/grafana/pkg/services/dashboardversion"
+	"github.com/grafana/grafana/pkg/services/featuremgmt"
 	"github.com/grafana/grafana/pkg/services/folder"
 	"github.com/grafana/grafana/pkg/services/org"
 	pref "github.com/grafana/grafana/pkg/services/preference"
@@ -740,9 +742,81 @@ func (hs *HTTPServer) GetHomeDashboard(c *contextmodel.ReqContext) response.Resp
 		return response.Error(http.StatusInternalServerError, "Failed to load home dashboard", err)
 	}
 
+	hs.applyOnboardingHubFeatureToggle(c, dash.Dashboard)
 	hs.addGettingStartedPanelToHomeDashboard(c, dash.Dashboard)
 
 	return response.JSON(http.StatusOK, &dash)
+}
+
+type removedDashboardPanel struct {
+	y int
+	h int
+}
+
+func (hs *HTTPServer) applyOnboardingHubFeatureToggle(c *contextmodel.ReqContext, dash *simplejson.Json) {
+	if hs.Cfg.DefaultHomeDashboardPath != "" {
+		return
+	}
+
+	if hs.Features != nil && hs.Features.IsEnabled(c.Req.Context(), featuremgmt.FlagOnboardingHub) {
+		return
+	}
+
+	removePanelsByTypeAndShift(dash, "onboardinghub")
+}
+
+func removePanelsByTypeAndShift(dash *simplejson.Json, panelType string) {
+	panels := dash.Get("panels").MustArray()
+	if len(panels) == 0 {
+		return
+	}
+
+	remainingPanels := make([]any, 0, len(panels))
+	removedPanels := make([]removedDashboardPanel, 0, 1)
+
+	for _, panel := range panels {
+		panelJSON := simplejson.NewFromAny(panel)
+		if panelJSON.Get("type").MustString() != panelType {
+			remainingPanels = append(remainingPanels, panel)
+			continue
+		}
+
+		gridPos := panelJSON.Get("gridPos")
+		height := gridPos.Get("h").MustInt()
+		if height > 0 {
+			removedPanels = append(removedPanels, removedDashboardPanel{
+				y: gridPos.Get("y").MustInt(),
+				h: height,
+			})
+		}
+	}
+
+	if len(removedPanels) == 0 {
+		return
+	}
+
+	sort.Slice(removedPanels, func(i, j int) bool {
+		return removedPanels[i].y < removedPanels[j].y
+	})
+
+	for _, panel := range remainingPanels {
+		panelJSON := simplejson.NewFromAny(panel)
+		gridPos := panelJSON.Get("gridPos")
+		panelY := gridPos.Get("y").MustInt()
+
+		for _, removedPanel := range removedPanels {
+			if panelY > removedPanel.y {
+				panelY -= removedPanel.h
+			}
+		}
+
+		if panelY < 0 {
+			panelY = 0
+		}
+		panelJSON.SetPath([]string{"gridPos", "y"}, panelY)
+	}
+
+	dash.Set("panels", remainingPanels)
 }
 
 func (hs *HTTPServer) addGettingStartedPanelToHomeDashboard(c *contextmodel.ReqContext, dash *simplejson.Json) {
@@ -765,7 +839,7 @@ func (hs *HTTPServer) addGettingStartedPanelToHomeDashboard(c *contextmodel.ReqC
 		"id":   123123,
 		"gridPos": map[string]any{
 			"x": 0,
-			"y": 3,
+			"y": nextFullWidthPanelY(panels),
 			"w": 24,
 			"h": 9,
 		},
@@ -773,6 +847,24 @@ func (hs *HTTPServer) addGettingStartedPanelToHomeDashboard(c *contextmodel.ReqC
 
 	panels = append(panels, newpanel)
 	dash.Set("panels", panels)
+}
+
+func nextFullWidthPanelY(panels []any) int {
+	nextY := 0
+	for _, panel := range panels {
+		panelJSON := simplejson.NewFromAny(panel)
+		gridPos := panelJSON.Get("gridPos")
+		if gridPos.Get("x").MustInt() != 0 || gridPos.Get("w").MustInt() != 24 {
+			continue
+		}
+
+		panelBottom := gridPos.Get("y").MustInt() + gridPos.Get("h").MustInt()
+		if panelBottom > nextY {
+			nextY = panelBottom
+		}
+	}
+
+	return nextY
 }
 
 // swagger:route GET /dashboards/uid/{uid}/versions dashboards versions getDashboardVersionsByUID

@@ -54,6 +54,13 @@ var (
 			Expression:  "false",
 		},
 		{
+			Name:        "onboardingHub",
+			Description: "Enable the Onboarding Hub panel on the default home dashboard",
+			Stage:       FeatureStageExperimental,
+			Owner:       grafanaAsCodeSquad,
+			Expression:  "false",
+		},
+		{
 			Name:         "canvasPanelNesting",
 			Description:  "Allow elements nesting",
 			Stage:        FeatureStageExperimental,

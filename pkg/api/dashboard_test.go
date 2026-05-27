@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"strings"
 	"testing"
 	"time"
@@ -74,39 +73,78 @@ func TestGetHomeDashboard(t *testing.T) {
 		dashboardVersionService: dashboardVersionService,
 		log:                     log.New("test-logger"),
 		tracer:                  tracing.InitializeTracerForTest(),
+		Features:                featuremgmt.WithFeatures(),
 	}
 
 	tests := []struct {
-		name                  string
-		defaultSetting        string
-		expectedDashboardPath string
+		name           string
+		defaultSetting string
+		features       featuremgmt.FeatureToggles
+		expectedPanels map[string]int
 	}{
-		{name: "using default config", defaultSetting: "", expectedDashboardPath: "../../public/dashboards/home.json"},
-		{name: "custom path", defaultSetting: "../../public/dashboards/default.json", expectedDashboardPath: "../../public/dashboards/default.json"},
+		{
+			name:           "using default config with onboarding hub disabled",
+			defaultSetting: "",
+			features:       featuremgmt.WithFeatures(),
+			expectedPanels: map[string]int{
+				"welcome":  0,
+				"dashlist": 4,
+				"news":     4,
+			},
+		},
+		{
+			name:           "using default config with onboarding hub enabled",
+			defaultSetting: "",
+			features:       featuremgmt.WithFeatures(featuremgmt.FlagOnboardingHub),
+			expectedPanels: map[string]int{
+				"onboardinghub": 0,
+				"welcome":       6,
+				"dashlist":      10,
+				"news":          10,
+			},
+		},
+		{
+			name:           "custom path is not changed by onboarding hub flag",
+			defaultSetting: "../../public/dashboards/default.json",
+			features:       featuremgmt.WithFeatures(),
+			expectedPanels: nil,
+		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			dash := dtos.DashboardFullWithMeta{}
-			dash.Meta.FolderTitle = "General"
-
-			homeDashJSON, err := os.ReadFile(tc.expectedDashboardPath)
-			require.NoError(t, err, "must be able to read expected dashboard file")
 			hs.Cfg.DefaultHomeDashboardPath = tc.defaultSetting
-			bytes, err := simplejson.NewJson(homeDashJSON)
-			require.NoError(t, err, "must be able to encode file as JSON")
+			hs.Features = tc.features
 
 			prefService.ExpectedPreference = &pref.Preference{}
-
-			dash.Dashboard = bytes
-
-			b, err := json.Marshal(dash)
-			require.NoError(t, err, "must be able to marshal object to JSON")
 
 			res := hs.GetHomeDashboard(req)
 			nr, ok := res.(*response.NormalResponse)
 			require.True(t, ok, "should return *NormalResponse")
-			require.Equal(t, b, nr.Body(), "default home dashboard should equal content on disk")
+
+			body, err := simplejson.NewJson(nr.Body())
+			require.NoError(t, err, "must be able to decode response JSON")
+
+			if tc.defaultSetting != "" {
+				require.Empty(t, body.Get("dashboard").Get("panels").MustArray())
+				return
+			}
+
+			panelsByType := map[string]*simplejson.Json{}
+			for _, panel := range body.Get("dashboard").Get("panels").MustArray() {
+				panelJSON := simplejson.NewFromAny(panel)
+				panelsByType[panelJSON.Get("type").MustString()] = panelJSON
+			}
+
+			_, hasOnboardingHub := panelsByType["onboardinghub"]
+			_, expectsOnboardingHub := tc.expectedPanels["onboardinghub"]
+			require.Equal(t, expectsOnboardingHub, hasOnboardingHub)
+
+			for panelType, expectedY := range tc.expectedPanels {
+				panel, ok := panelsByType[panelType]
+				require.True(t, ok, "expected %q panel to exist", panelType)
+				require.Equal(t, expectedY, panel.Get("gridPos").Get("y").MustInt())
+			}
 		})
 	}
 }

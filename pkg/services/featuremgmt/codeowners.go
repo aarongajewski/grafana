@@ -6,6 +6,7 @@ type codeowner string
 
 const (
 	grafanaAppPlatformSquad                     codeowner = "@grafana/grafana-app-platform-squad"
+	grafanaAsCodeSquad                          codeowner = "@grafana/grafana-as-code"
 	grafanaDashboardsSquad                      codeowner = "@grafana/dashboards-squad"
 	grafanaDatavizSquad                         codeowner = "@grafana/dataviz-squad"
 	grafanaSessionReplaySquad                   codeowner = "@grafana/session-replay"

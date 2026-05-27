@@ -3908,6 +3908,19 @@
     },
     {
       "metadata": {
+        "name": "onboardingHub",
+        "resourceVersion": "1779894491093",
+        "creationTimestamp": "2026-05-27T15:08:11Z"
+      },
+      "spec": {
+        "description": "Enable the Onboarding Hub panel on the default home dashboard",
+        "stage": "experimental",
+        "codeowner": "@grafana/grafana-as-code",
+        "expression": "false"
+      }
+    },
+    {
+      "metadata": {
         "name": "onlyStoreActionSets",
         "resourceVersion": "1771434338561",
         "creationTimestamp": "2025-10-20T15:02:56Z"
