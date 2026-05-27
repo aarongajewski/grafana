@@ -404,6 +404,10 @@ export function panelMenuBehavior(menu: VizPanelMenu) {
 }
 
 function shouldShowResetOnboardingHubAction(dashboard: DashboardScene, panel: VizPanel): boolean {
+  if (store.getBool('onboarding.hub.dismissed', false) || store.getBool('onboarding.sample.provisioned', false)) {
+    return true;
+  }
+
   if (panel.state.pluginId === 'onboardinghub') {
     return true;
   }

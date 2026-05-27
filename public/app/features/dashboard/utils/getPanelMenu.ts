@@ -319,6 +319,10 @@ export function getPanelMenu(
 }
 
 function shouldShowResetOnboardingHubAction(dashboard: DashboardModel, panel: PanelModel): boolean {
+  if (store.getBool('onboarding.hub.dismissed', false) || store.getBool('onboarding.sample.provisioned', false)) {
+    return true;
+  }
+
   if (panel.type === 'onboardinghub') {
     return true;
   }

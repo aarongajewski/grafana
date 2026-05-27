@@ -19,6 +19,16 @@ import {
 
 const sampleDashboards = [webTrafficDashboard, systemMetricsDashboard, businessFunnelDashboard];
 
+interface ExistingDashboardDTO {
+  dashboard: {
+    uid: string;
+    title: string;
+  };
+  meta: {
+    url?: string;
+  };
+}
+
 export async function provisionSampleWorkspace(): Promise<SampleWorkspaceResult> {
   if (store.get(SAMPLE_WORKSPACE_PROVISIONED_KEY)) {
     return getStoredWorkspaceResult();
@@ -32,6 +42,16 @@ export async function provisionSampleWorkspace(): Promise<SampleWorkspaceResult>
 
   try {
     for (const dashboard of sampleDashboards) {
+      const existingDashboard = await getExistingSampleDashboard(dashboard.uid);
+      if (existingDashboard) {
+        links.push({
+          uid: existingDashboard.dashboard.uid,
+          title: existingDashboard.dashboard.title,
+          url: existingDashboard.meta.url ?? `/d/${existingDashboard.dashboard.uid}`,
+        });
+        continue;
+      }
+
       const response = await getBackendSrv().post<ImportDashboardResponseDTO>('/api/dashboards/import', {
         dashboard,
         overwrite: false,
@@ -100,6 +120,16 @@ async function ensureTestDataDatasource(): Promise<void> {
     return;
   }
 
+  try {
+    await getBackendSrv().get(`/api/datasources/uid/${TESTDATA_DATASOURCE_UID}`);
+    getDatasourceSrv().reload();
+    return;
+  } catch (error) {
+    if (!hasStatus(error, 404)) {
+      throw error;
+    }
+  }
+
   await getBackendSrv().post('/api/datasources', {
     name: 'Onboarding TestData',
     type: TESTDATA_DATASOURCE_TYPE,
@@ -125,6 +155,18 @@ async function ensureSampleWorkspaceFolder(): Promise<FolderDTO> {
     uid: SAMPLE_WORKSPACE_FOLDER_UID,
     title: 'Sample workspace',
   });
+}
+
+async function getExistingSampleDashboard(uid: string): Promise<ExistingDashboardDTO | undefined> {
+  try {
+    return await getBackendSrv().get<ExistingDashboardDTO>(`/api/dashboards/uid/${uid}`);
+  } catch (error) {
+    if (!hasStatus(error, 404)) {
+      throw error;
+    }
+  }
+
+  return undefined;
 }
 
 async function rollbackCreatedDashboards(dashboardUids: string[]): Promise<void> {
