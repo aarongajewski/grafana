@@ -58,6 +58,14 @@ export function SampleWorkspaceCard() {
     }
   };
 
+  if (result) {
+    return (
+      <section className={styles.card} aria-label={t('onboardinghub.sample-workspace.label', 'Sample workspace')}>
+        <SuccessState links={result.links} />
+      </section>
+    );
+  }
+
   return (
     <section className={styles.card} aria-label={t('onboardinghub.sample-workspace.label', 'Sample workspace')}>
       <div className={styles.header}>
@@ -78,7 +86,7 @@ export function SampleWorkspaceCard() {
         </div>
       </div>
 
-      {result ? <SuccessState links={result.links} /> : <InitialState running={running} onTryIt={onTryIt} />}
+      <InitialState running={running} onTryIt={onTryIt} />
 
       {error && (
         <Alert
@@ -109,11 +117,16 @@ function InitialState({ running, onTryIt }: { running: boolean; onTryIt: () => v
 function SuccessState({ links }: { links: SampleWorkspaceDashboardLink[] }) {
   const styles = useStyles2(getStyles);
   return (
-    <div className={styles.success}>
-      <Icon name="check-circle" />
-      <span>
+    <div className={styles.successState}>
+      <div className={styles.success}>
+        <Icon name="check-circle" />
+        <h3 className={styles.title}>
+          <Trans i18nKey="onboardinghub.sample-workspace.success-title">Sample workspace ready</Trans>
+        </h3>
+      </div>
+      <p className={styles.muted}>
         <Trans i18nKey="onboardinghub.sample-workspace.success">Sample workspace created.</Trans>
-      </span>
+      </p>
       <div className={styles.links}>
         {links.map((link) => (
           <LinkButton key={link.uid} size="sm" variant="secondary" href={locationUtil.assureBaseUrl(link.url)}>
@@ -183,15 +196,17 @@ const getStyles = (theme: GrafanaTheme2) => ({
   success: css({
     display: 'flex',
     alignItems: 'center',
-    flexWrap: 'wrap',
     gap: theme.spacing(1),
     color: theme.colors.success.text,
+  }),
+  successState: css({
+    display: 'grid',
+    gap: theme.spacing(1),
   }),
   links: css({
     display: 'flex',
     gap: theme.spacing(1),
     flexWrap: 'wrap',
-    marginLeft: theme.spacing(1),
   }),
   errorBody: css({
     display: 'flex',

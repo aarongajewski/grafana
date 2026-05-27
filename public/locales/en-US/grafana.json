@@ -12385,6 +12385,7 @@
       "open-web-traffic": "Open Web Traffic",
       "retry": "Retry",
       "success": "Sample workspace created.",
+      "success-title": "Sample workspace ready",
       "title": "Try a sample workspace",
       "try-it": "Try it",
       "unknown-error": "An unexpected error occurred."
