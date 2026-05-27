@@ -77,10 +77,37 @@ export async function provisionSampleWorkspace(): Promise<SampleWorkspaceResult>
     links,
   };
 
-  store.set(SAMPLE_WORKSPACE_PROVISIONED_KEY, true);
-  store.set(SAMPLE_WORKSPACE_STORAGE_KEY, JSON.stringify(result));
+  persistSampleWorkspaceResult(result);
 
   return result;
+}
+
+export async function getExistingSampleWorkspaceResult(): Promise<SampleWorkspaceResult | undefined> {
+  const links: SampleWorkspaceResult['links'] = [];
+
+  for (const sampleDashboard of sampleWorkspaceDashboardLinks) {
+    const existingDashboard = await getExistingSampleDashboard(sampleDashboard.uid);
+    if (!existingDashboard) {
+      return undefined;
+    }
+
+    links.push({
+      uid: existingDashboard.dashboard.uid,
+      title: existingDashboard.dashboard.title,
+      url: existingDashboard.meta.url ?? sampleDashboard.url,
+    });
+  }
+
+  return {
+    folderUid: SAMPLE_WORKSPACE_FOLDER_UID,
+    dashboardUids: links.map((link) => link.uid),
+    links,
+  };
+}
+
+export function persistSampleWorkspaceResult(result: SampleWorkspaceResult): void {
+  store.set(SAMPLE_WORKSPACE_PROVISIONED_KEY, true);
+  store.set(SAMPLE_WORKSPACE_STORAGE_KEY, JSON.stringify(result));
 }
 
 export function getStoredWorkspaceResult(): SampleWorkspaceResult {

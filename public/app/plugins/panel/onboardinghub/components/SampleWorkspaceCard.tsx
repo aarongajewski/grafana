@@ -1,11 +1,16 @@
 import { css } from '@emotion/css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { locationUtil, store, type GrafanaTheme2 } from '@grafana/data';
 import { Trans, t } from '@grafana/i18n';
 import { Alert, Button, Icon, LinkButton, Spinner, useStyles2 } from '@grafana/ui';
 
-import { getStoredWorkspaceResult, provisionSampleWorkspace } from '../services/sampleWorkspace';
+import {
+  getExistingSampleWorkspaceResult,
+  getStoredWorkspaceResult,
+  persistSampleWorkspaceResult,
+  provisionSampleWorkspace,
+} from '../services/sampleWorkspace';
 import {
   SAMPLE_WORKSPACE_PROVISIONED_KEY,
   type SampleWorkspaceDashboardLink,
@@ -20,13 +25,34 @@ export function SampleWorkspaceCard() {
   const [error, setError] = useState<string | undefined>();
   const [running, setRunning] = useState(false);
 
+  useEffect(() => {
+    if (result) {
+      return;
+    }
+
+    getExistingSampleWorkspaceResult()
+      .then((existingResult) => {
+        if (existingResult) {
+          persistSampleWorkspaceResult(existingResult);
+          setResult(existingResult);
+        }
+      })
+      .catch(() => {});
+  }, [result]);
+
   const onTryIt = async () => {
     setRunning(true);
     setError(undefined);
     try {
       setResult(await provisionSampleWorkspace());
     } catch (error) {
-      setError(getErrorMessage(error));
+      const existingResult = await getExistingSampleWorkspaceResult();
+      if (existingResult) {
+        persistSampleWorkspaceResult(existingResult);
+        setResult(existingResult);
+      } else {
+        setError(getErrorMessage(error));
+      }
     } finally {
       setRunning(false);
     }
