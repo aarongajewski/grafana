@@ -52,10 +52,11 @@ describe('provisionSampleWorkspace', () => {
         return Promise.resolve({ uid: body.uid, title: body.title });
       }
       if (url === '/api/dashboards/import') {
+        const dashboard = getDashboard(body);
         return Promise.resolve({
-          uid: body.dashboard.uid,
-          title: body.dashboard.title,
-          importedUrl: `/d/${body.dashboard.uid}`,
+          uid: dashboard.uid,
+          title: dashboard.title,
+          importedUrl: `/d/${dashboard.uid}`,
         });
       }
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
@@ -103,10 +104,11 @@ describe('provisionSampleWorkspace', () => {
       if (url === '/api/folders') {
         return Promise.resolve({ uid: body.uid, title: body.title });
       }
-      if (url === '/api/dashboards/import' && body.dashboard.uid === 'onb-web-traffic') {
+      if (url === '/api/dashboards/import' && getDashboard(body).uid === 'onb-web-traffic') {
+        const dashboard = getDashboard(body);
         return Promise.resolve({
-          uid: body.dashboard.uid,
-          title: body.dashboard.title,
+          uid: dashboard.uid,
+          title: dashboard.title,
           importedUrl: '/d/onb-web-traffic',
         });
       }
@@ -125,3 +127,11 @@ describe('provisionSampleWorkspace', () => {
     expect(store.get(SAMPLE_WORKSPACE_PROVISIONED_KEY)).toBeUndefined();
   });
 });
+
+function getDashboard(body: BackendPostBody) {
+  if (!body.dashboard) {
+    throw new Error('Expected dashboard import body');
+  }
+
+  return body.dashboard;
+}
