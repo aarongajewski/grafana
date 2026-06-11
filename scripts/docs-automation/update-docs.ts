@@ -95,7 +95,39 @@ function commitDocsChanges(): boolean {
   return true;
 }
 
-function pushBranch(branch: string, token: string, remoteUrl: string): void {
+function pushWithConnectorNetrc(branch: string): boolean {
+  const { DRONE_NETRC_MACHINE, DRONE_NETRC_USERNAME, DRONE_NETRC_PASSWORD, HOME } = process.env;
+  if (!DRONE_NETRC_MACHINE || !DRONE_NETRC_USERNAME || !DRONE_NETRC_PASSWORD) {
+    return false;
+  }
+
+  const homeDir = HOME ?? tmpdir();
+  const netrcPath = join(homeDir, '.netrc');
+  writeFileSync(
+    netrcPath,
+    `machine ${DRONE_NETRC_MACHINE}\nlogin ${DRONE_NETRC_USERNAME}\npassword ${DRONE_NETRC_PASSWORD}\n`,
+    { mode: 0o600 }
+  );
+
+  try {
+    execFileSync('git', ['push', 'origin', `HEAD:${branch}`], {
+      cwd: REPO_ROOT,
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'pipe'],
+      env: {
+        ...process.env,
+        HOME: homeDir,
+        GIT_TERMINAL_PROMPT: '0',
+      },
+    });
+    console.log(`Pushed documentation commit to ${branch} via Harness connector credentials.`);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function pushWithAskpass(branch: string, token: string, remoteUrl: string): void {
   // Use GIT_ASKPASS so the token never appears in the remote URL or logged argv.
   const askpassPath = join(tmpdir(), `git-askpass-${process.pid}.sh`);
   writeFileSync(
@@ -125,6 +157,22 @@ function pushBranch(branch: string, token: string, remoteUrl: string): void {
     } catch {
       // Best-effort cleanup of the temporary askpass helper.
     }
+  }
+}
+
+function pushBranch(branch: string, token: string, remoteUrl: string): void {
+  if (pushWithConnectorNetrc(branch)) {
+    return;
+  }
+
+  try {
+    pushWithAskpass(branch, token, remoteUrl);
+  } catch (err) {
+    console.error(
+      'Git push failed. Ensure Harness secret github_pat is a classic PAT with repo scope ' +
+        'or a fine-grained PAT with Contents: Read and write on aarongajewski/grafana.'
+    );
+    throw err;
   }
 }
 
