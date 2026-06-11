@@ -105,7 +105,8 @@ function pushBranch(branch: string, token: string, remoteUrl: string): void {
   );
 
   try {
-    execFileSync('git', ['push', remoteUrl, `HEAD:${branch}`], {
+    // An empty credential.helper resets configured helpers, forcing Git to use our askpass token.
+    execFileSync('git', ['-c', 'credential.helper=', 'push', remoteUrl, `HEAD:${branch}`], {
       cwd: REPO_ROOT,
       encoding: 'utf8',
       stdio: ['pipe', 'pipe', 'pipe'],
