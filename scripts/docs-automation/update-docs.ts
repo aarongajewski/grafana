@@ -181,25 +181,42 @@ async function postPrComment(token: string, prNumber: string, body: string): Pro
     process.env.GITHUB_REPO_URL?.replace(/\.git$/, '').replace('https://github.com/', '') ??
     'aarongajewski/grafana';
 
-  const response = await fetch(`https://api.github.com/repos/${repoSlug}/issues/${prNumber}/comments`, {
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    Accept: 'application/vnd.github+json',
+    'Content-Type': 'application/json',
+    'X-GitHub-Api-Version': '2022-11-28',
+  };
+
+  const issuesResponse = await fetch(`https://api.github.com/repos/${repoSlug}/issues/${prNumber}/comments`, {
     method: 'POST',
-    headers: {
-      Authorization: `token ${token}`,
-      Accept: 'application/vnd.github+json',
-      'Content-Type': 'application/json',
-    },
+    headers,
     body: JSON.stringify({ body }),
   });
 
-  if (!response.ok) {
-    const details = await response.text();
-    console.warn(
-      `PR comment failed (${response.status}). Add Issues: Read and write (fine-grained) or repo scope (classic). ${details}`
-    );
+  if (issuesResponse.ok) {
+    console.log(`Posted comment on PR #${prNumber}.`);
     return;
   }
 
-  console.log(`Posted comment on PR #${prNumber}.`);
+  // Fine-grained PATs often grant Pull requests but not Issues; review comments work there.
+  const reviewResponse = await fetch(`https://api.github.com/repos/${repoSlug}/pulls/${prNumber}/reviews`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ body, event: 'COMMENT' }),
+  });
+
+  if (reviewResponse.ok) {
+    console.log(`Posted PR review comment on PR #${prNumber}.`);
+    return;
+  }
+
+  const details = await reviewResponse.text();
+  console.warn(
+    `PR comment failed (issues: ${issuesResponse.status}, reviews: ${reviewResponse.status}). ` +
+      'Grant Issues: Read and write or Pull requests: Read and write on the PAT. ' +
+      details
+  );
 }
 
 async function main(): Promise<void> {
