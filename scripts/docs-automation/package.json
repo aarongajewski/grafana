@@ -1,0 +1,16 @@
+{
+  "name": "@grafana/docs-automation",
+  "private": true,
+  "type": "module",
+  "description": "Cursor SDK docs updater for Harness PR-triggered documentation automation demo",
+  "scripts": {
+    "update-docs": "tsx update-docs.ts"
+  },
+  "dependencies": {
+    "@cursor/sdk": "^0.1.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}
