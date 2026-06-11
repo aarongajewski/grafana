@@ -16,20 +16,24 @@ function run(cmd: string): string {
   return execSync(cmd, { cwd: REPO_ROOT, encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] }).trim();
 }
 
-function parseArgs(argv: string[]): { base: string; dryRun: boolean } {
+function parseArgs(argv: string[]): { base: string; dryRun: boolean; prNumber?: string } {
   let base = process.env.BASE_BRANCH ?? 'main';
   let dryRun = process.env.DRY_RUN === 'true';
+  let prNumber = process.env.PR_NUMBER;
 
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--base' && argv[i + 1]) {
       base = argv[++i];
+    }
+    if (argv[i] === '--pr-number' && argv[i + 1]) {
+      prNumber = argv[++i];
     }
     if (argv[i] === '--dry-run') {
       dryRun = true;
     }
   }
 
-  return { base, dryRun };
+  return { base, dryRun, prNumber };
 }
 
 function collectDiffSummary(base: string): string {
@@ -220,7 +224,7 @@ async function postPrComment(token: string, prNumber: string, body: string): Pro
 }
 
 async function main(): Promise<void> {
-  const { base, dryRun } = parseArgs(process.argv.slice(2));
+  const { base, dryRun, prNumber } = parseArgs(process.argv.slice(2));
   const apiKey = process.env.CURSOR_API_KEY;
   if (!apiKey) {
     console.error('CURSOR_API_KEY is required.');
@@ -259,7 +263,6 @@ async function main(): Promise<void> {
   }
 
   const token = process.env.GITHUB_TOKEN;
-  const prNumber = process.env.PR_NUMBER;
   const commentBody =
     'Documentation auto-update pipeline finished. Review the docs commit on this PR.';
   const committed = commitDocsChanges();
