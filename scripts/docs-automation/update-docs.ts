@@ -2,9 +2,10 @@
  * Harness + Cursor documentation automation demo.
  * Invoked from the cursor_docs_update_demo pipeline on PR events.
  */
-import { execSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { execFileSync, execSync } from 'node:child_process';
+import { existsSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
 
 import { Agent, CursorAgentError } from '@cursor/sdk';
 
@@ -95,10 +96,35 @@ function commitDocsChanges(): boolean {
 }
 
 function pushBranch(branch: string, token: string, remoteUrl: string): void {
-  const slug = remoteUrl.replace(/^https:\/\//, '');
-  const authedUrl = `https://x-access-token:${token}@${slug}`;
-  run(`git push ${authedUrl} HEAD:${branch}`);
-  console.log(`Pushed documentation commit to ${branch}.`);
+  // Use GIT_ASKPASS so the token never appears in the remote URL or logged argv.
+  const askpassPath = join(tmpdir(), `git-askpass-${process.pid}.sh`);
+  writeFileSync(
+    askpassPath,
+    '#!/bin/sh\ncase "$1" in\n*Username*) echo "x-access-token";;\n*Password*) echo "$GIT_PUSH_TOKEN";;\nesac\n',
+    { mode: 0o700 }
+  );
+
+  try {
+    execFileSync('git', ['push', remoteUrl, `HEAD:${branch}`], {
+      cwd: REPO_ROOT,
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'pipe'],
+      env: {
+        ...process.env,
+        GIT_PUSH_TOKEN: token,
+        GIT_ASKPASS: askpassPath,
+        GIT_TERMINAL_PROMPT: '0',
+        DISPLAY: '1',
+      },
+    });
+    console.log(`Pushed documentation commit to ${branch}.`);
+  } finally {
+    try {
+      unlinkSync(askpassPath);
+    } catch {
+      // Best-effort cleanup of the temporary askpass helper.
+    }
+  }
 }
 
 async function main(): Promise<void> {
