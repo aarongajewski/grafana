@@ -176,6 +176,32 @@ function pushBranch(branch: string, token: string, remoteUrl: string): void {
   }
 }
 
+async function postPrComment(token: string, prNumber: string, body: string): Promise<void> {
+  const repoSlug =
+    process.env.GITHUB_REPO_URL?.replace(/\.git$/, '').replace('https://github.com/', '') ??
+    'aarongajewski/grafana';
+
+  const response = await fetch(`https://api.github.com/repos/${repoSlug}/issues/${prNumber}/comments`, {
+    method: 'POST',
+    headers: {
+      Authorization: `token ${token}`,
+      Accept: 'application/vnd.github+json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ body }),
+  });
+
+  if (!response.ok) {
+    const details = await response.text();
+    console.warn(
+      `PR comment failed (${response.status}). Add Issues: Read and write (fine-grained) or repo scope (classic). ${details}`
+    );
+    return;
+  }
+
+  console.log(`Posted comment on PR #${prNumber}.`);
+}
+
 async function main(): Promise<void> {
   const { base, dryRun } = parseArgs(process.argv.slice(2));
   const apiKey = process.env.CURSOR_API_KEY;
@@ -215,12 +241,23 @@ async function main(): Promise<void> {
     process.exit(0);
   }
 
+  const token = process.env.GITHUB_TOKEN;
+  const prNumber = process.env.PR_NUMBER;
+  const commentBody =
+    'Documentation auto-update pipeline finished. Review the docs commit on this PR.';
   const committed = commitDocsChanges();
+
   if (!committed) {
+    if (token && prNumber) {
+      await postPrComment(
+        token,
+        prNumber,
+        'Documentation auto-update pipeline finished. No additional documentation changes were needed.'
+      );
+    }
     process.exit(0);
   }
 
-  const token = process.env.GITHUB_TOKEN;
   const branch = process.env.PR_BRANCH ?? run('git rev-parse --abbrev-ref HEAD');
   const remoteUrl = process.env.GITHUB_REPO_URL ?? 'https://github.com/aarongajewski/grafana.git';
 
@@ -230,6 +267,10 @@ async function main(): Promise<void> {
   }
 
   pushBranch(branch, token, remoteUrl);
+
+  if (prNumber) {
+    await postPrComment(token, prNumber, commentBody);
+  }
 }
 
 main().catch((err) => {
