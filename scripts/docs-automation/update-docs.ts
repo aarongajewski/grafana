@@ -16,6 +16,10 @@ function run(cmd: string): string {
   return execSync(cmd, { cwd: REPO_ROOT, encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] }).trim();
 }
 
+function cleanSecret(value: string | undefined): string | undefined {
+  return value?.trim().replace(/^['"]|['"]$/g, '');
+}
+
 function parseArgs(argv: string[]): { base: string; dryRun: boolean; prNumber?: string } {
   let base = process.env.BASE_BRANCH ?? 'main';
   let dryRun = process.env.DRY_RUN === 'true';
@@ -262,7 +266,7 @@ async function main(): Promise<void> {
     process.exit(0);
   }
 
-  const token = process.env.GITHUB_TOKEN;
+  const token = cleanSecret(process.env.GITHUB_TOKEN);
   const commentBody =
     'Documentation auto-update pipeline finished. Review the docs commit on this PR.';
   const committed = commitDocsChanges();
