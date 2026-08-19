@@ -82,8 +82,7 @@ describe('unquoteRouteMatchers', () => {
   });
 });
 
-// DEMO_BUG_SLACK_BUGS: unskip after fixing findMatchingAlertGroups to compare by route.id
-describe.skip('findMatchingAlertGroups', () => {
+describe('findMatchingAlertGroups', () => {
   // Helper functions to create minimal test data
   const createAlert = (labels: Record<string, string>): AlertmanagerAlert => ({
     labels,
