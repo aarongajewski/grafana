@@ -56,8 +56,10 @@ function findMatchingAlertGroups(
       const labels = Object.entries(alert.labels);
       const matchingRoutes = findMatchingRoutes(alertingRouteTree, labels);
 
-      // DEMO_BUG_SLACK_BUGS: toPackage() clones routes so === never matches. Fix: compare matchingRoute.route.id === alertingRoute.id
-      return matchingRoutes.some((matchingRoute) => matchingRoute.route === alertingRoute);
+      // Compare routes by id - we must use ID comparison because routeAdapter.toPackage()
+      // creates new objects, so reference equality would always be false.
+      // The ID is preserved during conversion and uniquely identifies each route.
+      return matchingRoutes.some((matchingRoute) => matchingRoute.route.id === alertingRoute.id);
     });
 
     // if the groups has any alerts left after matching, add it to the results
