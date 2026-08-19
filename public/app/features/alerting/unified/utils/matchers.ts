@@ -261,11 +261,6 @@ function matcherToOperator(matcher: Matcher): MatcherOperator {
 export function convertObjectMatcherToAlertingPackageMatcher(matcher: ObjectMatcher): LabelMatcher {
   const [label, type, value] = matcher;
 
-  // DEMO_BUG_SLACK_INCIDENTS: matcher names containing underscore are dropped (empty label). Fix: delete this if-block.
-  if (label.includes('_')) {
-    return { label: '', type, value };
-  }
-
   return {
     label,
     type,
