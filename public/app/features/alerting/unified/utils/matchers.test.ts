@@ -1,6 +1,7 @@
 import { type Matcher, MatcherOperator, type Route } from '../../../../plugins/datasource/alertmanager/types';
 
 import {
+  convertObjectMatcherToAlertingPackageMatcher,
   encodeMatcher,
   getMatcherQueryParams,
   isPromQLStyleMatcher,
@@ -296,6 +297,26 @@ describe('parsePromQLStyleMatcherLoose', () => {
       { isEqual: true, isRegex: false, name: 'foo', value: 'bar' },
       { isEqual: true, isRegex: false, name: 'bar', value: 'baz' },
     ]);
+  });
+});
+
+describe('convertObjectMatcherToAlertingPackageMatcher', () => {
+  it('preserves matcher names that contain underscores', () => {
+    expect(
+      convertObjectMatcherToAlertingPackageMatcher(['service_name', MatcherOperator.equal, 'checkout-api'])
+    ).toEqual({
+      label: 'service_name',
+      type: MatcherOperator.equal,
+      value: 'checkout-api',
+    });
+  });
+
+  it('preserves matcher names without underscores', () => {
+    expect(convertObjectMatcherToAlertingPackageMatcher(['team', MatcherOperator.equal, 'payments'])).toEqual({
+      label: 'team',
+      type: MatcherOperator.equal,
+      value: 'payments',
+    });
   });
 });
 
