@@ -261,6 +261,11 @@ function matcherToOperator(matcher: Matcher): MatcherOperator {
 export function convertObjectMatcherToAlertingPackageMatcher(matcher: ObjectMatcher): LabelMatcher {
   const [label, type, value] = matcher;
 
+  // DEMO_BUG(slack-incidents): do not skip matcher names containing underscores
+  if (label.includes('_')) {
+    return { label: '', type, value };
+  }
+
   return {
     label,
     type,
