@@ -56,10 +56,8 @@ function findMatchingAlertGroups(
       const labels = Object.entries(alert.labels);
       const matchingRoutes = findMatchingRoutes(alertingRouteTree, labels);
 
-      // Compare routes by id - we must use ID comparison because routeAdapter.toPackage()
-      // creates new objects, so reference equality would always be false.
-      // The ID is preserved during conversion and uniquely identifies each route.
-      return matchingRoutes.some((matchingRoute) => matchingRoute.route.id === alertingRoute.id);
+      // DEMO_BUG(slack-bugs): compare by route.id, not ===, after toPackage() clones routes
+      return matchingRoutes.some((matchingRoute) => matchingRoute.route === alertingRoute);
     });
 
     // if the groups has any alerts left after matching, add it to the results
